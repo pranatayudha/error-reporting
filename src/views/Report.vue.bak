@@ -1,0 +1,613 @@
+<template>
+  <v-container>
+    <v-card>
+      <v-toolbar dark flat>
+        <v-toolbar-title class="mx-auto">Generate Report</v-toolbar-title>
+      </v-toolbar>
+
+      <v-card class="mx-auto" min-height="120px">
+        <div class="text-center">
+          <v-chip
+            class="ma-2 px-4 py-4"
+            color="blue"
+            outlined
+            @click="showTaskProgrammer"
+          >
+            <v-icon left>
+              mdi-account-details
+            </v-icon>
+            Total Task Programmer
+          </v-chip>
+          <v-chip
+            class="ma-2 px-4 py-4"
+            color="green"
+            outlined
+            @click="showReviewKinerja"
+          >
+            <v-icon left>
+              mdi-human-male-board-poll
+            </v-icon>
+            Review Kinerja
+          </v-chip>
+          <v-chip
+            class="ma-2 px-4 py-4"
+            color="grey"
+            outlined
+            @click="showUserLogin"
+          >
+            <v-icon left>
+              mdi-account
+            </v-icon>
+            User Login
+          </v-chip>
+          <v-chip
+            class="ma-2 px-4 py-4"
+            color="orange"
+            outlined
+            @click="showProgrammerActivity"
+          >
+            <v-icon left>
+              mdi-human-male-board-poll
+            </v-icon>
+            Programmer Activity
+          </v-chip>
+
+          <v-chip
+            class="ma-2 px-4 py-4"
+            color="red"
+            outlined
+            @click="showQAActivity"
+          >
+            <v-icon left>
+              mdi-human-male-board-poll
+            </v-icon>
+            QA Activity
+          </v-chip>
+        </div>
+
+        <v-divider></v-divider>
+
+        <div v-show="taskProgrammer">
+          <v-toolbar flat color="transparent" class="black--text">
+            <v-col cols="12" sm="6">
+              <v-select
+                v-model="selectedUserTaskProgrammer"
+                :items="listUserProgrammer"
+                :item-text="(user) => `${user.name}`"
+                :item-value="(user) => `${user.id}`"
+                label="User"
+                color="grey"
+                placeholder="User"
+                hide-details
+                prepend-inner-icon="mdi-account"
+                dense
+                clearable
+                solo-inverted
+                flat
+              />
+            </v-col>
+
+            <v-col cols="12" sm="6">
+              <v-dialog
+                ref="dialog"
+                v-model="modal"
+                :return-value.sync="date"
+                persistent
+                width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="date"
+                    label="Date"
+                    prepend-inner-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    hide-details
+                    dense
+                    solo-inverted
+                    flat
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date" scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="modal = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn text color="primary" @click="saveDate(date)">
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-dialog>
+            </v-col>
+          </v-toolbar>
+
+          <v-row class="mx-3">
+            <v-spacer></v-spacer>
+            <v-col cols="6" md="2">
+              <v-btn
+                outlined
+                block
+                color="blue"
+                @click="generateTaskProgrammer"
+              >
+                GENERATE
+                <template v-slot:loader>
+                  <span class="custom-loader">
+                    <v-icon light>mdi-cached</v-icon>
+                  </span>
+                </template>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </div>
+
+        <div v-show="reviewKinerja">
+          <v-toolbar flat color="transparent" class="black--text">
+            <v-col cols="12" sm="6">
+              <v-select
+                v-model="selectedUserReviewKinerja"
+                :items="listUsers"
+                :item-text="(user) => `${user.name}`"
+                :item-value="(user) => `${user.id}`"
+                label="User"
+                color="grey"
+                placeholder="User"
+                hide-details
+                prepend-inner-icon="mdi-account"
+                dense
+                clearable
+                solo-inverted
+                flat
+              />
+            </v-col>
+
+            <v-col cols="12" sm="6">
+              <v-dialog
+                ref="dialog2"
+                v-model="modal2"
+                :return-value.sync="date2"
+                persistent
+                width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="date2"
+                    label="Date"
+                    prepend-inner-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    hide-details
+                    dense
+                    solo-inverted
+                    flat
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date2" scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="modal2 = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.dialog2.save(date2)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-dialog>
+            </v-col>
+          </v-toolbar>
+
+          <v-row class="mx-3">
+            <v-spacer></v-spacer>
+            <v-col cols="6" md="2">
+              <v-btn outlined block color="green">
+                GENERATE
+                <template v-slot:loader>
+                  <span class="custom-loader">
+                    <v-icon light>mdi-cached</v-icon>
+                  </span>
+                </template>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </div>
+
+        <div v-show="userLogin">
+          <v-toolbar flat color="transparent" class="black--text">
+            <v-col cols="12" sm="6">
+              <v-select
+                v-model="selectedUserLogin"
+                :items="listUsers"
+                :item-text="(user) => `${user.name}`"
+                :item-value="(user) => `${user.id}`"
+                label="User"
+                color="grey"
+                placeholder="User"
+                hide-details
+                prepend-inner-icon="mdi-account"
+                dense
+                clearable
+                solo-inverted
+                flat
+              />
+            </v-col>
+
+            <v-col cols="12" sm="6">
+              <v-dialog
+                ref="dialog3"
+                v-model="modal3"
+                :return-value.sync="date3"
+                persistent
+                width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="date3"
+                    label="Date"
+                    prepend-inner-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    hide-details
+                    dense
+                    solo-inverted
+                    flat
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date3" scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="modal3 = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.dialog3.save(date3)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-dialog>
+            </v-col>
+          </v-toolbar>
+
+          <v-row class="mx-3">
+            <v-spacer></v-spacer>
+            <v-col cols="6" md="2">
+              <v-btn outlined block color="red">
+                GENERATE
+                <template v-slot:loader>
+                  <span class="custom-loader">
+                    <v-icon light>mdi-cached</v-icon>
+                  </span>
+                </template>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </div>
+
+        <div v-show="programmerActivity">
+          <v-toolbar flat color="transparent" class="black--text">
+            <v-col cols="12" sm="6">
+              <v-select
+                v-model="selectedUserProgrammerActivity"
+                :items="listUserProgrammer"
+                :item-text="(user) => `${user.name}`"
+                :item-value="(user) => `${user.id}`"
+                label="User"
+                color="grey"
+                placeholder="User"
+                hide-details
+                prepend-inner-icon="mdi-account"
+                dense
+                clearable
+                solo-inverted
+                flat
+              />
+            </v-col>
+
+            <v-col cols="12" sm="6">
+              <v-dialog
+                ref="dialog4"
+                v-model="modal4"
+                :return-value.sync="date4"
+                persistent
+                width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="date4"
+                    label="Date"
+                    prepend-inner-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    hide-details
+                    dense
+                    solo-inverted
+                    flat
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date4" scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="modal4 = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.dialog4.save(date4)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-dialog>
+            </v-col>
+          </v-toolbar>
+
+          <v-row class="mx-3">
+            <v-spacer></v-spacer>
+            <v-col cols="6" md="2">
+              <v-btn outlined block color="orange">
+                GENERATE
+                <template v-slot:loader>
+                  <span class="custom-loader">
+                    <v-icon light>mdi-cached</v-icon>
+                  </span>
+                </template>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </div>
+
+        <div v-show="qaActivity">
+          <v-toolbar flat color="transparent" class="black--text">
+            <v-col cols="12" sm="6">
+              <v-select
+                v-model="selectedUserQAActivity"
+                :items="listUserQA"
+                :item-text="(user) => `${user.name}`"
+                :item-value="(user) => `${user.id}`"
+                label="User"
+                color="grey"
+                placeholder="User"
+                hide-details
+                prepend-inner-icon="mdi-account"
+                dense
+                clearable
+                solo-inverted
+                flat
+              />
+            </v-col>
+
+            <v-col cols="12" sm="6">
+              <v-dialog
+                ref="dialog5"
+                v-model="modal5"
+                :return-value.sync="date5"
+                persistent
+                width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="date5"
+                    label="Date"
+                    prepend-inner-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    hide-details
+                    dense
+                    solo-inverted
+                    flat
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date5" scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="modal5 = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.dialog5.save(date5)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-dialog>
+            </v-col>
+          </v-toolbar>
+
+          <v-row class="mx-3">
+            <v-spacer></v-spacer>
+            <v-col cols="6" md="2">
+              <v-btn outlined block color="orange">
+                GENERATE
+                <template v-slot:loader>
+                  <span class="custom-loader">
+                    <v-icon light>mdi-cached</v-icon>
+                  </span>
+                </template>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </div>
+      </v-card>
+    </v-card>
+  </v-container>
+</template>
+
+<script>
+// const store = require("store");
+
+import moment from "moment";
+// import axios from "axios";
+
+export default {
+  data() {
+    return {
+      taskProgrammer: false,
+      reviewKinerja: false,
+      userLogin: false,
+      programmerActivity: false,
+      qaActivity: false,
+      selectedUserTaskProgrammer: "",
+      selectedUserReviewKinerja: "",
+      selectedUserLogin: "",
+      selectedUserProgrammerActivity: "",
+      selectedUserQAActivity: "",
+      // datepicker 1
+      date: "",
+      modal: false,
+      // datepicker 2
+      date2: "",
+      modal2: false,
+      // datepicker 3
+      date3: "",
+      modal3: false,
+      // datepicker 4
+      date4: "",
+      modal4: false,
+      // datepicker 5
+      date5: "",
+      modal5: false,
+      taskProgrammerList: [],
+    };
+  },
+  created() {
+    this.$store.dispatch("LOAD_GET_STATUS_DATA");
+    this.$store.dispatch("LOAD_ACTIVE_ISSUE");
+    this.$store.dispatch("LOAD_USERS_DATA");
+  },
+  computed: {
+    listUsers() {
+      let data = this.$store.getters.getUsers.filter((u) => u.role != "system");
+      return [{ id: 999, name: "All" }, ...data];
+    },
+    listUserProgrammer() {
+      let data = this.$store.getters.getUsers.filter(
+        (u) => u.role != "QA" && u.role != "system"
+      );
+      return [{ id: 999, name: "All" }, ...data];
+    },
+    listUserQA() {
+      return this.$store.getters.getUsers.filter((u) => u.role == "QA");
+    },
+    getDetailData() {
+      const dataDetail = this.$store.getters.getActiveIssue;
+      return dataDetail;
+    },
+  },
+  watch: {},
+  methods: {
+    showTaskProgrammer() {
+      this.taskProgrammer = true;
+      this.reviewKinerja = false;
+      this.userLogin = false;
+      this.programmerActivity = false;
+      this.qaActivity = false;
+    },
+    saveDate(time) {
+      this.$refs.dialog.save(time);
+    },
+    convertDate(date) {
+      return moment(date).format("YYYY-MM-DD");
+    },
+    generateTaskProgrammer() {
+      let taskProgrammerData = this.getDetailData.filter((data) => {
+        if (data.updated_at != null) {
+          let updatedAt = this.convertDate(data.updated_at);
+          if (this.selectedUserTaskProgrammer == 999) {
+            return (
+              (data.project == "Hawk-ID" || data.project == "Hawk-AU") &&
+              updatedAt == this.date &&
+              data.status == 3
+            );
+          } else {
+            return (
+              (data.project == "Hawk-ID" || data.project == "Hawk-AU") &&
+              updatedAt == this.date &&
+              data.users_id == this.selectedUserTaskProgrammer &&
+              data.status == 3
+            );
+          }
+        }
+      });
+
+      this.taskProgrammerList = taskProgrammerData;
+      console.log(this.taskProgrammerList);
+    },
+    showReviewKinerja() {
+      this.taskProgrammer = false;
+      this.reviewKinerja = true;
+      this.userLogin = false;
+      this.programmerActivity = false;
+      this.qaActivity = false;
+    },
+    showUserLogin() {
+      this.taskProgrammer = false;
+      this.reviewKinerja = false;
+      this.userLogin = true;
+      this.programmerActivity = false;
+      this.qaActivity = false;
+    },
+    showProgrammerActivity() {
+      this.taskProgrammer = false;
+      this.reviewKinerja = false;
+      this.userLogin = false;
+      this.programmerActivity = true;
+      this.qaActivity = false;
+    },
+    showQAActivity() {
+      this.taskProgrammer = false;
+      this.reviewKinerja = false;
+      this.userLogin = false;
+      this.programmerActivity = false;
+      this.qaActivity = true;
+    },
+  },
+};
+</script>
+<style>
+.custom-loader {
+  animation: loader 1s infinite;
+  display: flex;
+}
+@-moz-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

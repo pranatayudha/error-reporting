@@ -1,0 +1,16 @@
+Programmer
+    - Halaman my task
+        - status listnya assigned
+        - 3 button di detail
+            - start checking, testing, pending
+        - ketika pending, status berubah jd pending dan masih bisa start checking
+
+QA
+    - Halaman my task
+        - error detail bugnya
+        - status list testing (ketika programmer klik testing)
+        - 2 button
+            - closed, ketika bug sudah tidak error
+            - re-assign user, ketika bugnya masih error, masuk ke my task programmer
+
+Copas method getBlame di semua file folder detail

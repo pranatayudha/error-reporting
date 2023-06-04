@@ -490,7 +490,7 @@ export default {
             `${process.env.VUE_APP_GITLAB_URL}/2/repository/files/${encodeUri}/blame?ref=develop`,
             {
               headers: {
-                "PRIVATE-TOKEN": "UMQUfzQhhFxoFBJhxc5d",
+                "PRIVATE-TOKEN": "PRIVATE-TOKEN",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Credentials": true,
                 "Access-Control-Allow-Headers":
@@ -543,7 +543,7 @@ export default {
             `${process.env.VUE_APP_GITLAB_URL}/2/repository/files/${encodeUri}/blame?ref=develop`,
             {
               headers: {
-                "PRIVATE-TOKEN": "UMQUfzQhhFxoFBJhxc5d",
+                "PRIVATE-TOKEN": "PRIVATE-TOKEN",
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Credentials": true,
                 "Access-Control-Allow-Headers":
